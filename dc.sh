@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-BOT_ENV_PATH='djs-bot/.env'
+BOT_ENV_PATH='djs-bot-navi/.env'
 
 if [ -f $BOT_ENV_PATH ]; then
   cp $BOT_ENV_PATH "docker/"
@@ -26,17 +26,17 @@ elif [ ! -f "docker/docker-compose.yml" ]; then
 fi
 
 if [ ! -f "docker/.env" ]; then
-    if [ -f "djs-bot/.env" ]; then
-        echo -e "\033[93;4mCopying .env file from djs-bot to docker.\033[0m"
-        cp djs-bot/.env docker/.env
+    if [ -f "djs-bot-navi/.env" ]; then
+        echo -e "\033[93;4mCopying .env file from djs-bot-navi to docker.\033[0m"
+        cp djs-bot-navi/.env docker/.env
     else
         echo -e "\033[91mNo .env file found, please create one.\033[0m"
         exit 126
     fi
 else
-    if ! cmp -s docker/.env djs-bot/.env; then
-        echo -e "\033[93;4mCopying .env file from djs-bot to docker.\033[0m"
-        cp djs-bot/.env docker/.env
+    if ! cmp -s docker/.env djs-bot-navi/.env; then
+        echo -e "\033[93;4mCopying .env file from djs-bot-navi to docker.\033[0m"
+        cp djs-bot-navi/.env docker/.env
     fi
 fi
 
@@ -55,7 +55,7 @@ COMPOSE_CONTAINERS_RUNNING=$(${DOCKER} \
 # creates 2 files named .SERVICES and .ENABLE
 # used for setting variable for the parent
 parse_start_options() {
-    echo djs-bot dashboard postgres-db lavalink >.SERVICES
+    echo djs-bot-navi dashboard postgres-db lavalink-navi >.SERVICES
     echo db-start >.ENABLE # Enable the database by default
 
     while [[ "$1" != "" ]]; do
@@ -65,7 +65,7 @@ parse_start_options() {
             sed -i "s/postgres-db//" .SERVICES
             ;;
         noll)
-            sed -i "s/lavalink//" .SERVICES
+            sed -i "s/lavalink-navi//" .SERVICES
             ;;
         nofe)
             sed -i "s/dashboard//" .SERVICES
@@ -84,7 +84,7 @@ parse_start_options() {
 # creates 2 files named .SERVICES and .ENABLE
 # used for setting variable for the parent
 parse_lite_options() {
-    echo djs-bot >.SERVICES
+    echo djs-bot-navi >.SERVICES
     echo start >.ENABLE # Disable the database by default
 
     while [[ "$1" != "" ]]; do
@@ -94,7 +94,7 @@ parse_lite_options() {
             sed -i "s/$/ postgres-db/" .SERVICES
             ;;
         ll)
-            sed -i "s/$/ lavalink/" .SERVICES
+            sed -i "s/$/ lavalink-navi/" .SERVICES
             ;;
         fe)
             sed -i "s/$/ dashboard/" .SERVICES
@@ -136,7 +136,7 @@ if [[ "$1" == "up" ]]; then
         echo -e "\t\033[3m$0 up [nodb] [noll] [nofe]\033[23m"
         echo -e "\033[93;4mOptions:\033[0m"
         echo -e "\t\033[3mnodb\033[23m\tStart the project without the database"
-        echo -e "\t\033[3mnoll\033[23m\tStart the project without the Lavalink server"
+        echo -e "\t\033[3mnoll\033[23m\tStart the project without the lavalink-navi server"
         echo -e "\t\033[3mnofe\033[23m\tStart the project without the frontend"
         echo -e "\t\033[3mno-docker\033[23m\tStart the project without docker"
         echo -e "\033[93;4mExamples:\033[0m"
@@ -149,7 +149,7 @@ if [[ "$1" == "up" ]]; then
     elif [[ "$1" == "no-docker" ]]; then
         shift
         # Run the bot without docker
-        cd ./djs-bot && npm run start
+        cd ./djs-bot-navi && npm run start
     else
         parse_start_options $@
         export ENABLE=$(cat .ENABLE)
@@ -174,7 +174,7 @@ elif [[ "$1" == "lite" ]]; then
         echo -e "\t\033[3m$0 lite [db] [ll] [fe]\033[23m"
         echo -e "\033[93;4mOptions:\033[0m"
         echo -e "\t\033[3mdb\033[23m\tStart the project with the database"
-        echo -e "\t\033[3mll\033[23m\tStart the project with the Lavalink server"
+        echo -e "\t\033[3mll\033[23m\tStart the project with the lavalink-navi server"
         echo -e "\t\033[3mfe\033[23m\tStart the project with the frontend"
         echo -e "\t\033[3mdocker\033[23m\tStart the project with docker"
         echo -e "\033[93;4mExamples:\033[0m"
@@ -186,7 +186,7 @@ elif [[ "$1" == "lite" ]]; then
         exit 3
     elif [[ "$1" == "" ]]; then
         # Run the bot without docker
-        cd ./djs-bot && npm run start
+        cd ./djs-bot-navi && npm run start
     else
         if [[ "$1" == "docker" ]]; then
             shift
@@ -337,7 +337,7 @@ elif [[ "$1" == "help" ]]; then
     echo -e "\t\033[3m$0 <command>\033[23m"
     echo -e "\033[93;4mCommands:\033[0m"
     echo -e "  up [help]   \tStart the project"
-    echo -e "  lite [help]\tStart bot only without database, lavalink and dashboard"
+    echo -e "  lite [help]\tStart bot only without database, lavalink-navi and dashboard"
     echo -e "  down    \tStop the project"
     echo -e "  enter    \tEnter a container"
     echo -e "  log    \tView the logs"
