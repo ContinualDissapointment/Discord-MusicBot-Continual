@@ -1,9 +1,9 @@
 services:
-  djs-bot:
-    container_name: djs-bot
+  djs-bot-navi:
+    container_name: djs-bot-navi
     build:
       context: ..
-      dockerfile: ./docker/djs-bot/Dockerfile
+      dockerfile: ./docker/djs-bot-navi/Dockerfile
     restart: "unless-stopped"
     init: true
     environment:
@@ -15,52 +15,21 @@ services:
     stdin_open: true
     tty: true
     volumes:
-      - ../djs-bot:/djs-bot
+      - ../djs-bot-navi:/djs-bot-navi
     depends_on:
-      - postgres-db
-      - lavalink
+      - lavalink-navi
     ports:
-      - "8080:8080"
-      - "3001:3001"
-    working_dir: /djs-bot
+      - "8081:8081"
+      - "3002:3002"
+    working_dir: /djs-bot-navi
     command: ["npm", "run", "${ENABLE:-start}", "--loglevel=error"]
     env_file:
       - .env
       - lavalink.env
 
-  dashboard:
-    container_name: dashboard
-    image: node:latest
-    restart: "unless-stopped"
-    init: true
-    stdin_open: true
-    tty: true
-    volumes:
-      - ../dashboard:/dashboard
-    depends_on:
-      - postgres-db
-      - lavalink
-    ports:
-      - "3000:3000"
-    working_dir: /dashboard
-    command: sh -c "
-      npm config set fund false &&
-      npm config set audit false &&
-      npm run build-and-start
-      "
-
-  postgres-db:
-    image: postgres:16.4-alpine
-    container_name: postgres
-    restart: unless-stopped
-    volumes:
-      - postgres_data:/var/lib/postgresql/data
-    env_file:
-      - .env
-
-  lavalink:
-    image: fredboat/lavalink:3.7.12
-    container_name: lavalink
+  lavalink-navi:
+    image: fredboat/lavalink:3.7.13
+    container_name: lavalink-navi
     restart: unless-stopped
     hostname: docker.lavalink
     user: root
@@ -68,9 +37,6 @@ services:
       - ./lavalink/application.yml:/opt/Lavalink/application.yml
       - ./lavalink/plugins/:/opt/Lavalink/plugins
     ports:
-      - 2333:2333
+      - 2334:2334
     env_file:
       - lavalink.env
-
-volumes:
-  postgres_data:
